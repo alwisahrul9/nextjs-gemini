@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    @keyframes sound-wave {
+      0%, 100% {
+        transform: scaleY(1);
+      }
+      50% {
+        transform: scaleY(1.5);
+      }
+    }
+
+    .animate-sound-wave {
+      animation: sound-wave 1s infinite ease-in-out;
+    }
+
+    /* Custom delay utilities */
+    .animation-delay-200 {
+      animation-delay: 0.2s;
+    }
+    .animation-delay-400 {
+      animation-delay: 0.4s;
+    }
+    .animation-delay-600 {
+      animation-delay: 0.6s;
+    }
+    .animation-delay-800 {
+      animation-delay: 0.8s;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+   /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+  }
+}
