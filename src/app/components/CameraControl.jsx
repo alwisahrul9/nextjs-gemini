@@ -1,7 +1,7 @@
 "use client"
 
 import { MdCamera } from "react-icons/md";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import takePhotoSound from "../assets/take-photo-sound.wav"
 import { Context } from "./ChatContainer";
 
@@ -9,17 +9,13 @@ export default function CameraControl() {
     const { setChatHistory, setIsLoading, setFile, file, runGemini } = useContext(Context)
 
     const [openCameraModal, setOpenCameraModal] = useState(false);
-    const [breakPoint, setBreakPoint] = useState(null)
+    const [breakPoint, setBreakPoint] = useState(typeof window !== "undefined" ? window.matchMedia("(min-width: 1024px)") : null) // lg: 1024
     const [takePhoto, setTakePhoto] = useState(false)
 
     const video = useRef(null)
     const canvas = useRef(null)
     const prompt = useRef(null);
     const streamRef = useRef(null);
-
-    useEffect(() => {
-        setBreakPoint(window.matchMedia("(min-width: 1024px)")) // lg: 1024
-    }, [])
 
     async function cameraHandle() {
         setOpenCameraModal(true)

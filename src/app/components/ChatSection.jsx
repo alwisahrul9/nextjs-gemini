@@ -12,15 +12,6 @@ export default function ChatSection() {
     useEffect(() => {
         const element = document.getElementById("chat-section");
         element.scrollTop = element.scrollHeight;
-
-        // window.addEventListener("beforeunload", (event) => {
-        //     event.preventDefault();
-        //     const mapping = chatHistory.map((item) => {
-        //         return URL.createObjectURL(item.file)
-        //     })
-        //     localStorage.setItem("chatHistory", JSON.stringify(mapping));
-        //     event.returnValue = true;
-        // });
     }, [chatHistory])
 
     return (
