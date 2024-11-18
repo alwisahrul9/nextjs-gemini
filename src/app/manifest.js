@@ -1,8 +1,8 @@
 export default function manifest() {
     return {
-        name: 'Next.js PWA',
-        short_name: 'NextPWA',
-        description: 'A Progressive Web App built with Next.js',
+        name: 'Kank AI',
+        short_name: 'KankAI',
+        description: 'Aplikasi Chat AI canggih yang memberikan pengalaman interaktif dan responsif dengan kecerdasan buatan. Dapatkan jawaban instan untuk pertanyaan Anda, buat percakapan alami, dan nikmati komunikasi yang lebih efisien.',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',
