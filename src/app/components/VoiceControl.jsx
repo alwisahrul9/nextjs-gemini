@@ -1,50 +1,51 @@
 "use client";
 
 import { Modal } from "flowbite-react";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { Context } from "./ChatContainer";
 
 export default function VoiceControl() {
     const [openModal, setOpenModal] = useState(false);
     const [voice, setVoice] = useState("")
+    const [recognition, setRecognition] = useState(null)
 
     const { setFile, setChatHistory, setIsLoading, file, runGemini } = useContext(Context)
 
     const voiceInput = useRef(null)
 
-    if (typeof window !== "undefined") {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
-        recognition.lang = 'id-ID';
+    useEffect(() => {
+        setRecognition(new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition))
+    }, [])
 
-        recognition.onstart = () => {
-            setVoice("")
-        }
+    recognition.lang = 'id-ID';
 
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            if(transcript){
-                setVoice(prev => prev + transcript)
-            } else {
-                recognition.stop()
-                setOpenModal(false)
-            }
-        };
-
-        recognition.onend = () => {
-            let time = 2
-            const timer = setInterval(() => {
-                time--
-                if(time === 0) {
-                    setOpenModal(false)
-                    clearInterval(timer)
-                }
-            }, 1000)
-            if(voiceInput.current?.value){
-                handleVoiceInput(voiceInput.current.value)
-            }
-        };
+    recognition.onstart = () => {
+        setVoice("")
     }
 
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        if(transcript){
+            setVoice(prev => prev + transcript)
+        } else {
+            recognition.stop()
+            setOpenModal(false)
+        }
+    };
+
+    recognition.onend = () => {
+        let time = 2
+        const timer = setInterval(() => {
+            time--
+            if(time === 0) {
+                setOpenModal(false)
+                clearInterval(timer)
+            }
+        }, 1000)
+        if(voiceInput.current?.value){
+            handleVoiceInput(voiceInput.current.value)
+        }
+    };
 
     function startVoice() {
         setOpenModal(true)
