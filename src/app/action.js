@@ -5,7 +5,7 @@ import fs from "fs";
 import path from "path";
 
 // Tentukan direktori sementara, misalnya di `/tmp`
-const TEMP_DIR = path.join(process.cwd(), "tmp");
+const TEMP_DIR = path.join('/tmp', 'gemini_tmp');
 
 // Pastikan direktori sementara ada
 if (!fs.existsSync(TEMP_DIR)) {
