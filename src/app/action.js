@@ -4,7 +4,7 @@ import { fileManager, model } from "@/app/lib/gemini/config";
 import fs from "fs";
 import path from "path";
 
-// Tentukan direktori sementara, misalnya di `/tmp`
+// Tentukan direktori sementara, menggunakan /tmp
 const TEMP_DIR = path.join('/tmp', 'gemini_tmp');
 
 // Pastikan direktori sementara ada
@@ -45,19 +45,16 @@ export async function geminiHandle(formData) {
             });
 
             // Generate content using text and the URI reference for the uploaded file.
-            const result = await model.generateContent([
-                {
-                    fileData: {
-                        mimeType: uploadResponse.file.mimeType,
-                        fileUri: uploadResponse.file.uri,
-                    },
+            const result = await model.generateContent([{
+                fileData: {
+                    mimeType: uploadResponse.file.mimeType,
+                    fileUri: uploadResponse.file.uri,
                 },
-                {
-                    text: prompt
-                },
-            ]);
+            }, {
+                text: prompt
+            }]);
 
-            fs.unlinkSync(filePath);
+            fs.unlinkSync(filePath); // Hapus file setelah digunakan
 
             if(result.response.text()) {
                 return {
