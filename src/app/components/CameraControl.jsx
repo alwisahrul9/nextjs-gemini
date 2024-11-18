@@ -1,3 +1,5 @@
+"use client"
+
 import { MdCamera } from "react-icons/md";
 import { useContext, useRef, useState } from "react";
 import takePhotoSound from "../assets/take-photo-sound.wav"

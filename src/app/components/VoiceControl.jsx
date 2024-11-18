@@ -15,35 +15,36 @@ export default function VoiceControl() {
     if (typeof window !== "undefined") {
         const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
         recognition.lang = 'id-ID';
-    }
 
-    recognition.onstart = () => {
-        setVoice("")
-    }
-
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        if(transcript){
-            setVoice(prev => prev + transcript)
-        } else {
-            recognition.stop()
-            setOpenModal(false)
+        recognition.onstart = () => {
+            setVoice("")
         }
-    };
 
-    recognition.onend = () => {
-        let time = 2
-        const timer = setInterval(() => {
-            time--
-            if(time === 0) {
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            if(transcript){
+                setVoice(prev => prev + transcript)
+            } else {
+                recognition.stop()
                 setOpenModal(false)
-                clearInterval(timer)
             }
-        }, 1000)
-        if(voiceInput.current?.value){
-            handleVoiceInput(voiceInput.current.value)
-        }
-    };
+        };
+
+        recognition.onend = () => {
+            let time = 2
+            const timer = setInterval(() => {
+                time--
+                if(time === 0) {
+                    setOpenModal(false)
+                    clearInterval(timer)
+                }
+            }, 1000)
+            if(voiceInput.current?.value){
+                handleVoiceInput(voiceInput.current.value)
+            }
+        };
+    }
+
 
     function startVoice() {
         setOpenModal(true)
