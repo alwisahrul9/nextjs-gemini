@@ -1,54 +1,63 @@
 "use client";
 
 import { Modal } from "flowbite-react";
-import { useContext, useRef, useState } from "react";
+import { useContext, useRef, useState, useEffect } from "react";
 import { Context } from "./ChatContainer";
 
 export default function VoiceControl() {
     const [openModal, setOpenModal] = useState(false);
-    const [voice, setVoice] = useState("")
+    const [voice, setVoice] = useState("");
+    const { setFile, setChatHistory, setIsLoading, file, runGemini } = useContext(Context);
+    const voiceInput = useRef(null);
 
-    const { setFile, setChatHistory, setIsLoading, file, runGemini } = useContext(Context)
+    const [recognition, setRecognition] = useState(null);
 
-    const voiceInput = useRef(null)
-
-    if (typeof window !== "undefined") {
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
-        recognition.lang = 'id-ID';
-
-        recognition.onstart = () => {
-            setVoice("")
+    useEffect(() => {
+        // Inisialisasi SpeechRecognition hanya di sisi klien
+        if (typeof window !== "undefined") {
+            const recognitionInstance = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+            recognitionInstance.lang = 'id-ID';
+            setRecognition(recognitionInstance);
         }
+    }, []);
 
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            if(transcript){
-                setVoice(prev => prev + transcript)
-            } else {
-                recognition.stop()
-                setOpenModal(false)
-            }
-        };
+    useEffect(() => {
+        if (recognition) {
+            recognition.onstart = () => {
+                setVoice("");
+            };
 
-        recognition.onend = () => {
-            let time = 2
-            const timer = setInterval(() => {
-                time--
-                if(time === 0) {
-                    setOpenModal(false)
-                    clearInterval(timer)
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                if (transcript) {
+                    setVoice(prev => prev + transcript);
+                } else {
+                    recognition.stop();
+                    setOpenModal(false);
                 }
-            }, 1000)
-            if(voiceInput.current?.value){
-                handleVoiceInput(voiceInput.current.value)
-            }
-        };
-    }
+            };
 
+            recognition.onend = () => {
+                let time = 2;
+                const timer = setInterval(() => {
+                    time--;
+                    if (time === 0) {
+                        setOpenModal(false);
+                        clearInterval(timer);
+                    }
+                }, 1000);
+                if (voiceInput.current?.value) {
+                    handleVoiceInput(voiceInput.current.value);
+                }
+            };
+        }
+    }, [recognition]);
 
     function startVoice() {
-        setOpenModal(true)
-        recognition.start()
+        if (recognition) {
+            setOpenModal(true);
+            recognition.start();
+        }
     }
 
     async function handleVoiceInput(value) {
@@ -56,19 +65,19 @@ export default function VoiceControl() {
             file: file ? file : '',
             chat: value,
             role: "user"
-        }])
+        }]);
 
         // Kosongkan file
-        setFile('')
+        setFile('');
 
         // Nyalakan Loading
-        setIsLoading(true)
+        setIsLoading(true);
 
-        const formData = new FormData()
-        formData.append('file', file ? file : '')
-        formData.append('prompt', value)
+        const formData = new FormData();
+        formData.append('file', file ? file : '');
+        formData.append('prompt', value);
 
-        runGemini(formData)
+        runGemini(formData);
     }
 
     return (
@@ -80,8 +89,8 @@ export default function VoiceControl() {
                 </svg>
             </button>
             <Modal show={openModal} onClose={() => {
-                recognition.abort()
-                setOpenModal(false)
+                if (recognition) recognition.abort();
+                setOpenModal(false);
             }}>
                 <Modal.Header className="bg-slate-800"/>
                 <Modal.Body className="bg-slate-800">
@@ -99,13 +108,7 @@ export default function VoiceControl() {
                     </div>
                     <div className="h-56 overflow-y-scroll no-scrollbar py-5">
                         <p className={`text-lg text-white font-semibold tracking-wide ${voice ? '' : 'text-center'}`}>
-                            {
-                                voice
-                                ?
-                                voice
-                                :
-                                "Say something...."
-                            }
+                            {voice ? voice : "Say something...."}
                         </p>
                         <p className="text-lg text-white font-semibold tracking-wide"></p>
                         <input type="text" ref={voiceInput} hidden value={voice} />

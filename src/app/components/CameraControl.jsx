@@ -1,7 +1,5 @@
-"use client"
-
 import { MdCamera } from "react-icons/md";
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import takePhotoSound from "../assets/take-photo-sound.wav"
 import { Context } from "./ChatContainer";
 
@@ -9,7 +7,7 @@ export default function CameraControl() {
     const { setChatHistory, setIsLoading, setFile, file, runGemini } = useContext(Context)
 
     const [openCameraModal, setOpenCameraModal] = useState(false);
-    const [breakPoint, setBreakPoint] = useState(null) // lg: 1024
+    const [breakPoint, setBreakPoint] = useState(null)
     const [takePhoto, setTakePhoto] = useState(false)
 
     const video = useRef(null)
@@ -17,12 +15,15 @@ export default function CameraControl() {
     const prompt = useRef(null);
     const streamRef = useRef(null);
 
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const mediaQuery = window.matchMedia("(min-width: 1024px)"); // lg: 1024
+            setBreakPoint(mediaQuery);  // Update breakPoint
+        }
+    }, [])
+
     async function cameraHandle() {
         setOpenCameraModal(true)
-
-        if(typeof window !== "undefined"){
-            setBreakPoint(window.matchMedia("(min-width: 1024px)"))
-        }
 
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
@@ -39,7 +40,7 @@ export default function CameraControl() {
                     },
                     facingMode: {
                         // exact: "user",
-                        exact: breakPoint.matches ? "user" : "environment",
+                        exact: breakPoint?.matches ? "user" : "environment",
                     }
                 },
                 audio: false
@@ -120,7 +121,7 @@ export default function CameraControl() {
             <div className={`fixed ${openCameraModal ? 'block' : 'hidden'} top-0 left-0 w-full h-full z-50 bg-slate-800 bg-opacity-95`}>
                 <div className="h-full flex justify-center items-center flex-col w-full">
                     <video width={640} height={480} hidden={takePhoto} className="w-full mx-auto" ref={video} autoPlay={true}></video>
-                    <canvas ref={canvas} hidden={!takePhoto} width={breakPoint.matches ? 1920 : 1080} height={breakPoint.matches ? 1080 : 1920} className="w-full mx-auto"></canvas>
+                    <canvas ref={canvas} hidden={!takePhoto} width={breakPoint?.matches ? 1920 : 1080} height={breakPoint?.matches ? 1080 : 1920} className="w-full mx-auto"></canvas>
                 </div>
                 <div className={`absolute flex ${takePhoto ? 'justify-between' : 'justify-end'} w-full z-50 top-0 left-0 px-4 pt-5`}>
                     <button type="button" hidden={!takePhoto} className="bg-slate-100 border-2 border-slate-400 rounded-full p-1" onClick={() => setTakePhoto(false)}>
