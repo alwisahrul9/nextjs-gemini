@@ -7,7 +7,7 @@ export default function CameraControl() {
     const { setChatHistory, setIsLoading, setFile, file, runGemini } = useContext(Context)
 
     const [openCameraModal, setOpenCameraModal] = useState(false);
-    const [breakPoint, setBreakPoint] = useState(window.matchMedia("(min-width: 1024px)")) // lg: 1024
+    const [breakPoint, setBreakPoint] = useState(typeof window !== "undefined" ? window.matchMedia("(min-width: 1024px)") : null) // lg: 1024
     const [takePhoto, setTakePhoto] = useState(false)
 
     const video = useRef(null)

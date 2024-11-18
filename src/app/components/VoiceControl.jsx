@@ -12,8 +12,10 @@ export default function VoiceControl() {
 
     const voiceInput = useRef(null)
 
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
-    recognition.lang = 'id-ID';
+    if (typeof window !== "undefined") {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition)();
+        recognition.lang = 'id-ID';
+    }
 
     recognition.onstart = () => {
         setVoice("")
